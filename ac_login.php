@@ -1,7 +1,5 @@
 <?php 
-
 if (isset($_POST['login'])) {
-
 	require 'connectDB.php';
 
 	$Usermail = $_POST['email']; 
@@ -11,11 +9,11 @@ if (isset($_POST['login'])) {
 		header("location: login.php?error=emptyfields");
   		exit();
 	}
-	else if (!filter_var($Usermail,FILTER_VALIDATE_EMAIL)) {
+	else if (!filter_var($Usermail, FILTER_VALIDATE_EMAIL)) {
           header("location: login.php?error=invalidEmail");
           exit();
     }
-	else{
+	else {
 		$sql = "SELECT * FROM admin WHERE admin_email=?";
 		$result = mysqli_stmt_init($conn);
 		if (!mysqli_stmt_prepare($result, $sql)) {
@@ -47,11 +45,11 @@ if (isset($_POST['login'])) {
 			}
 		}
 	}
-mysqli_stmt_close($result);    
-mysqli_close($conn);
+	mysqli_stmt_close($result);    
+	mysqli_close($conn);
 }
 else{
-  header("location: login.php");
-  exit();
+	header("location: login.php");
+	exit();
 }
 ?>

@@ -1,9 +1,8 @@
 <?php
-/* Database connection settings */
 	$servername = "localhost";
-    $username = "root";		//put your phpmyadmin username.(default is "root")
-    $password = "";			//if your phpmyadmin has a password put it here.(default is "root")
-    $dbname = "rfidattendance";
+    $username = "root";
+    $password = "";
+    $dbname = "FreqMaker";
     
 	$conn = mysqli_connect($servername, $username, $password, $dbname);
 	

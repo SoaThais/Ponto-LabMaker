@@ -1,14 +1,12 @@
 <?php
-	//Connect to database
     $servername = "localhost";
-    $username = "root";		//put your phpmyadmin username.(default is "root")
-    $password = "";			//if your phpmyadmin has a password put it here.(default is "root")
+    $username = "root";	
+    $password = "";
     $dbname = "";
     
 	$conn = new mysqli($servername, $username, $password, $dbname);
 
-	// Create database
-	$sql = "CREATE DATABASE biometricattendace";
+	$sql = "CREATE DATABASE FreqMaker";
 	if ($conn->query($sql) === TRUE) {
 	    echo "Database created successfully";
 	} else {
@@ -17,16 +15,13 @@
 
 	echo "<br>";
 
-	$dbname = "biometricattendace";
+	$dbname = "FreqMaker";
     
 	$conn = new mysqli($servername, $username, $password, $dbname);
 
-	// sql to create table
 	$sql = "CREATE TABLE IF NOT EXISTS `users` (
 			`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			`username` varchar(100) NOT NULL,
-			`serialnumber` double NOT NULL,
-			`gender` varchar(10) NOT NULL,
 			`email` varchar(50) NOT NULL,
 			`fingerprint_id` int(11) NOT NULL,
 			`fingerprint_select` tinyint(1) NOT NULL DEFAULT '0',
@@ -45,7 +40,6 @@
 	$sql = "CREATE TABLE IF NOT EXISTS `users_logs` (
 			`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			`username` varchar(100) NOT NULL,
-			`serialnumber` double NOT NULL,
 			`fingerprint_id` int(5) NOT NULL,
 			`checkindate` date NOT NULL,
 			`timein` time NOT NULL,

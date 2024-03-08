@@ -1,15 +1,13 @@
 <?php  
 session_start();
 ?>
-<div class="table-responsive" style="max-height: 500px;"> 
-  <table class="table">
+<div class="table-responsive"> 
+  <table class="table" id="table" >
     <thead class="table-primary">
       <tr>
-        <th>ID</th>
         <th>Name</th>
-        <th>Serial Number</th>
         <th>Card UID</th>
-        <th>Device Dep</th>
+        <th>Device Name</th>
         <th>Date</th>
         <th>Time In</th>
         <th>Time Out</th>
@@ -17,8 +15,6 @@ session_start();
     </thead>
     <tbody class="table-secondary">
       <?php
-
-        //Connect to database
         require'connectDB.php';
         $searchQuery = " ";
         $Start_date = " ";
@@ -27,75 +23,84 @@ session_start();
         $End_time = " ";
         $Card_sel = " ";
 
+
         if (isset($_POST['log_date'])) {
-          //Start date filter
-          if ($_POST['date_sel_start'] != 0) {
+          if (!empty($_POST['date_sel_start'])) {
               $Start_date = $_POST['date_sel_start'];
-              $_SESSION['searchQuery'] = "checkindate='".$Start_date."'";
+              $_SESSION['searchQuery'] = "checkindate >= '".$Start_date."'";
           }
           else{
               $Start_date = date("Y-m-d");
-              $_SESSION['searchQuery'] = "checkindate='".date("Y-m-d")."'";
+              $_SESSION['searchQuery'] = "checkindate ='".date("Y-m-d")."'";
           }
-          //End date filter
-          if ($_POST['date_sel_end'] != 0) {
+          if (!empty($_POST['date_sel_end'])) {
               $End_date = $_POST['date_sel_end'];
               $_SESSION['searchQuery'] = "checkindate BETWEEN '".$Start_date."' AND '".$End_date."'";
           }
-          //Time-In filter
           if ($_POST['time_sel'] == "Time_in") {
-            //Start time filter
-            if ($_POST['time_sel_start'] != 0 && $_POST['time_sel_end'] == 0) {
+            if (!empty($_POST['time_sel_start']) && empty($_POST['time_sel_end'])) {
                 $Start_time = $_POST['time_sel_start'];
-                $_SESSION['searchQuery'] .= " AND timein='".$Start_time."'";
+                $_SESSION['searchQuery'] .= " AND timein >= '".$Start_time."'";
             }
-            elseif ($_POST['time_sel_start'] != 0 && $_POST['time_sel_end'] != 0) {
+            elseif (!empty($_POST['time_sel_start']) && !empty($_POST['time_sel_end'])) {
                 $Start_time = $_POST['time_sel_start'];
             }
-            //End time filter
-            if ($_POST['time_sel_end'] != 0) {
+            if (!empty($_POST['time_sel_end'])) {
                 $End_time = $_POST['time_sel_end'];
                 $_SESSION['searchQuery'] .= " AND timein BETWEEN '".$Start_time."' AND '".$End_time."'";
             }
           }
-          //Time-out filter
           if ($_POST['time_sel'] == "Time_out") {
-            //Start time filter
-            if ($_POST['time_sel_start'] != 0 && $_POST['time_sel_end'] == 0) {
+            if (!empty($_POST['time_sel_start']) && empty($_POST['time_sel_end'])) {
                 $Start_time = $_POST['time_sel_start'];
-                $_SESSION['searchQuery'] .= " AND timeout='".$Start_time."'";
+                $_SESSION['searchQuery'] .= " AND timeout <= '".$Start_time."'";
             }
-            elseif ($_POST['time_sel_start'] != 0 && $_POST['time_sel_end'] != 0) {
+            elseif (!empty($_POST['time_sel_start']) && !empty($_POST['time_sel_end'])) {
                 $Start_time = $_POST['time_sel_start'];
             }
-            //End time filter
-            if ($_POST['time_sel_end'] != 0) {
+            if (!empty($_POST['time_sel_end'])) {
                 $End_time = $_POST['time_sel_end'];
                 $_SESSION['searchQuery'] .= " AND timeout BETWEEN '".$Start_time."' AND '".$End_time."'";
             }
           }
-          //Card filter
-          if ($_POST['card_sel'] != 0) {
+          if (!empty($_POST['card_sel'])) {
               $Card_sel = $_POST['card_sel'];
               $_SESSION['searchQuery'] .= " AND card_uid='".$Card_sel."'";
           }
-          //Department filter
-          if ($_POST['dev_uid'] != 0) {
+          if (!empty($_POST['dev_uid'])) {
               $dev_uid = $_POST['dev_uid'];
               $_SESSION['searchQuery'] .= " AND device_uid='".$dev_uid."'";
           }
         }
         
         if ($_POST['select_date'] == 1) {
-            $Start_date = date("Y-m-d");
-            $_SESSION['searchQuery'] = "checkindate='".$Start_date."'";
+            // $Start_date = date("Y-m-d");
+            // $_SESSION['searchQuery'] = "checkindate='".$Start_date."'";
+            $_SESSION['searchQuery'] = "1";
         }
 
-        // $sql = "SELECT * FROM users_logs WHERE checkindate=? AND pic_date BETWEEN ? AND ? ORDER BY id ASC";
+        echo "<script>";
+        echo "var sessionData = " . json_encode($_SESSION) . ";";
+        echo "console.log(sessionData);";
+        echo "</script>";
+
         $sql = "SELECT * FROM users_logs WHERE ".$_SESSION['searchQuery']." ORDER BY id DESC";
         $result = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($result, $sql)) {
-            echo '<p class="error">SQL Error</p>';
+          ?>
+          <script>
+            bootbox.alert({
+              message: "Database Error",
+              closeButton: false,
+              buttons: {
+              ok: {
+                label: 'OK',
+                className: 'btn-success'
+              }
+              }
+            }).find('.modal-dialog').addClass('modal-dialog-centered');
+          </script>
+          <?php
         }
         else{
             mysqli_stmt_execute($result);
@@ -104,11 +109,9 @@ session_start();
                 while ($row = mysqli_fetch_assoc($resultl)){
         ?>
                   <TR>
-                  <TD><?php echo $row['id'];?></TD>
                   <TD><?php echo $row['username'];?></TD>
-                  <TD><?php echo $row['serialnumber'];?></TD>
                   <TD><?php echo $row['card_uid'];?></TD>
-                  <TD><?php echo $row['device_dep'];?></TD>
+                  <TD><?php echo $row['device_name'];?></TD>
                   <TD><?php echo $row['checkindate'];?></TD>
                   <TD><?php echo $row['timein'];?></TD>
                   <TD><?php echo $row['timeout'];?></TD>
@@ -117,8 +120,53 @@ session_start();
                 }
             }
         }
-        // echo $sql;
       ?>
     </tbody>
   </table>
 </div>
+<div id="pagination"></div>
+
+<script>
+    let itemsPerPage;
+    let currentPage = localStorage.getItem('currentPage') || 1;
+
+    function calculateItemsPerPage() {
+        const windowHeight = $('.below').height() - 10;
+        console.log(windowHeight);
+        const rowHeight = 50; 
+        return Math.floor(windowHeight / rowHeight);
+    }
+
+    function updateTableDisplay() {
+        itemsPerPage = calculateItemsPerPage(); 
+        const $table = $('table');
+        const $pagination = $('#pagination');
+
+        const numRows = $table.find('tr').length;
+        const numPages = Math.ceil(numRows / itemsPerPage);
+
+        $pagination.empty(); 
+
+        for (let i = 1; i <= numPages; i++) {
+            $pagination.append(`<a href="#" data-page="${i}">${i}</a>`);
+        }
+        
+        showPage(currentPage);
+    }
+
+    function showPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        $('table tr').hide().slice(start, end).show();
+    }
+
+    $(document).on('click', '#pagination a', function(e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        currentPage = page;
+        localStorage.setItem('currentPage', currentPage); 
+        showPage(page);
+    });
+
+    updateTableDisplay();
+</script>

@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  // Get Report passenger
   $(document).on('click', '#user_log', function(){
     
     var date_sel_start = $('#date_sel_start').val();
@@ -24,14 +23,7 @@ $(document).ready(function(){
         'dev_uid': dev_uid,
       },
       success: function(response){
-
-        $('.up_info2').fadeIn(500);
-        $('.up_info2').text("The Filter has been selected!");
-
         $('#Filter-export').modal('hide');
-        setTimeout(function () {
-            $('.up_info2').fadeOut(500);
-        }, 5000);
 
         $.ajax({
           url: "user_log_up.php",
@@ -52,5 +44,8 @@ $(document).ready(function(){
         });
       }
     });
+  });
+  $('#To_Excel').click(function(){
+    $('#exportForm').submit();
   });
 });
